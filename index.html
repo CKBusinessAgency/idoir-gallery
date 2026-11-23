@@ -73,7 +73,9 @@
       app.innerHTML = panel("Can't load the gallery", "Check your connection and refresh the page.");
       return;
     }
-    if (res.status === 401) return askPasscode(data.name, !!passcode);
+    // Only ask for a passcode when the gallery itself says so; any other 401 is a server setup problem.
+    if (res.status === 401 && data && data.error === "passcode_required") return askPasscode(data.name, !!passcode);
+    if (res.status === 401) { app.innerHTML = panel("Gallery unavailable", "The gallery can't be opened right now. Please try again later."); return; }
     if (res.status === 403) { app.innerHTML = panel(data.name, "This gallery is private. Open the link you were sent after your photo session to see your photos."); return; }
     if (res.status === 410) { app.innerHTML = panel(data.name, "This gallery has closed. Ask the host if you need a copy of your photos."); return; }
     if (!res.ok) { app.innerHTML = panel("Gallery not found", "Check the link you were sent."); return; }
